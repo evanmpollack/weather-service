@@ -1,12 +1,13 @@
 package com.evanm.weather.geocoding.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.evanm.weather.HereProperties;
-import com.evanm.weather.geocoding.domain.Point;
+import com.evanm.weather.geocoding.dto.Point;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -15,11 +16,16 @@ public class GeocodingService {
     @Autowired
     private HereProperties hereProperties;
     
-    public Point encode(String address) {
-        // turn into beans
-        RestTemplate restTemplate = new RestTemplate();
-        ObjectMapper mapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper mapper;
+    
+    private RestTemplate restTemplate;
 
+    public GeocodingService(RestTemplateBuilder builder) {
+        restTemplate = builder.build();
+    }
+    
+    public Point encode(String address) {
         // Here URL builder class needed
         // StringBuilder instead of manual string construction?
         String service = HereApiService.GEOCODING.service;
@@ -51,10 +57,6 @@ public class GeocodingService {
     }
 
     public String decode(Point p) {
-        // turn into beans
-        RestTemplate restTemplate = new RestTemplate();
-        ObjectMapper mapper = new ObjectMapper();
-
         // Here URL builder class needed
         // StringBuilder instead of manual string construction?
         String service = HereApiService.REVERSE_GEOCODING.service;
