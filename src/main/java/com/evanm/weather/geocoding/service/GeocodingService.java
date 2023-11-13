@@ -7,17 +7,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.evanm.weather.HereProperties;
+import com.evanm.weather.geocoding.dto.Address;
 import com.evanm.weather.geocoding.dto.Point;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class GeocodingService {
     @Autowired
     private HereProperties hereProperties;
-    
-    @Autowired
-    private ObjectMapper mapper;
     
     private RestTemplate restTemplate;
 
@@ -36,19 +32,11 @@ public class GeocodingService {
         String params = "q=" + address + "&apiKey=" + hereProperties.getApiKey();
         String url = protocol + "://" + host + "/" + path + "?" + params;
 
-        // Look into custom parser
         try {
-            ResponseEntity<String> res = restTemplate.getForEntity(url, String.class);;
+            ResponseEntity<Point> res = restTemplate.getForEntity(url, Point.class);
             if (res.getStatusCode().isError()) { throw new Exception("callout to Here API failed"); }
             
-            JsonNode position = mapper.readTree(res.getBody())
-                                    .path("items")
-                                    .elements()
-                                    .next()
-                                    .path("position");
-            if(position.isMissingNode()) { throw new Exception(service + " API response cannot be parsed"); }
-
-            return mapper.treeToValue(position, Point.class);
+            return res.getBody();
         } catch (Exception e) {
             System.out.println(e.getClass().getName());
             System.out.println(e.getMessage());
@@ -56,7 +44,7 @@ public class GeocodingService {
         }
     }
 
-    public String decode(Point p) {
+    public Address decode(Point p) {
         // Here URL builder class needed
         // StringBuilder instead of manual string construction?
         String service = HereApiService.REVERSE_GEOCODING.service;
@@ -67,19 +55,11 @@ public class GeocodingService {
         String params = "at=" + p + "&apiKey=" + hereProperties.getApiKey();
         String url = protocol + "://" + host + "/" + path + "?" + params;
 
-        // Look into custom parser
         try {
-            ResponseEntity<String> res = restTemplate.getForEntity(url, String.class);
+            ResponseEntity<Address> res = restTemplate.getForEntity(url, Address.class);
             if (res.getStatusCode().isError()) { throw new Exception("callout to Here API failed"); }
-
-            JsonNode address = mapper.readTree(res.getBody())
-                                    .path("items")
-                                    .elements()
-                                    .next()
-                                    .path("address");
-            if(address.isMissingNode()) { throw new Exception(service + " API response cannot be parsed"); }
     
-            return address.toPrettyString();
+            return res.getBody();
         } catch (Exception e) {
             System.out.println(e.getClass().getName());
             System.out.println(e.getMessage());

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.evanm.weather.geocoding.dto.Address;
 import com.evanm.weather.geocoding.dto.Point;
 import com.evanm.weather.geocoding.service.GeocodingService;
 
@@ -32,7 +33,7 @@ public class ForecastController {
     }
 
     @GetMapping(value = "/decode/{point}", produces = "application/json")
-    public String getAddress(@PathVariable Point point) {
+    public Address getAddress(@PathVariable Point point) {
         return geocoder.decode(point);
     }
 }
