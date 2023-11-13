@@ -1,14 +1,13 @@
 package com.evanm.weather.geocoding.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-// @JsonDeserialize(using = PointDeserializer.class)
+@JsonDeserialize(using = PointDeserializer.class)
 public class Point {
     private double latitude;
     private double longitude;
 
-    public Point(@JsonProperty("lat") double latitude, @JsonProperty("lng") double longitude) {
+    public Point(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }
