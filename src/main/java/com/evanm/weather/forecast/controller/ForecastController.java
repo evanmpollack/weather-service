@@ -21,19 +21,24 @@ public class ForecastController {
     public String home() {
         return "Forecast Home";
     }
-    
-    @GetMapping(value = "/hello", produces = "text/plain")
-    public String getForecast() {
-        return "Hello";
-    }
 
     @GetMapping(value = "/encode/{address}", produces = "application/json")
     public Point getPoint(@PathVariable String address) {
-        return geocoder.encode(address);
+        try {
+            return geocoder.encode(address);
+        } catch(Exception e) {
+            System.err.println(e.getMessage());
+            return null;
+        }
     }
 
     @GetMapping(value = "/decode/{point}", produces = "application/json")
     public Address getAddress(@PathVariable Point point) {
-        return geocoder.decode(point);
+        try {
+            return geocoder.decode(point);
+        } catch(Exception e) {
+            System.err.println(e.getMessage());
+            return null;
+        }
     }
 }
