@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class HereProperties {
     private String apiKey;
     private String apiVersion;
-    private String baseOrigin;
+    private String baseHost;
 
     public String getApiKey() {
         return apiKey;
@@ -26,11 +26,11 @@ public class HereProperties {
         this.apiVersion = apiVersion;
     }
 
-    public String getBaseOrigin() {
-        return baseOrigin;
+    public String getBaseHost() {
+        return baseHost;
     }
 
-    public void setBaseOrigin(String baseOrigin) {
-        this.baseOrigin = baseOrigin;
+    public void setBaseHost(String baseHost) {
+        this.baseHost = baseHost;
     }
 }
