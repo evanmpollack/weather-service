@@ -14,7 +14,7 @@ public class HereUriComponentDirector {
     private UriComponentsBuilder builder;
 
     public HereUriComponentDirector(HereProperties properties) {
-        this.builder = UriComponentsBuilder.newInstance()
+        builder = UriComponentsBuilder.newInstance()
             .scheme("https")
             .host("{service}." + properties.getBaseHost())
             .pathSegment(properties.getApiVersion())
@@ -24,11 +24,11 @@ public class HereUriComponentDirector {
 
     public UriComponents getEncodeUri(String address) {
         return builder.replaceQueryParam("q", address)
-            .buildAndExpand(Collections.singletonMap("service", HereApiServiceOptions.GEOCODE.toString()));
+            .buildAndExpand(Collections.singletonMap("service", HereApiServiceOptions.GEOCODE));
     }
 
     public UriComponents getDecodeUri(Point point) {
-        return builder.replaceQueryParam("at", point.toString())
-            .buildAndExpand(Collections.singletonMap("service", HereApiServiceOptions.REV_GEOCODE.toString()));
+        return builder.replaceQueryParam("at", point)
+            .buildAndExpand(Collections.singletonMap("service", HereApiServiceOptions.REV_GEOCODE));
     }
 }
