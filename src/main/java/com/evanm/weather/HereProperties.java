@@ -1,9 +1,7 @@
 package com.evanm.weather;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
-@Component
 @ConfigurationProperties(prefix = "here")
 public class HereProperties {
     private String apiKey;
