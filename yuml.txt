@@ -1,0 +1,83 @@
+// Weather Service Relationships (Service Aggregate)
+[WeatherController]<>->[WeatherService]
+[WeatherService]<>->[GeocodingService]
+[WeatherService]<>->[AlertService]
+[WeatherService]<>->[ForecastService]
+
+// Forecast Service Relationships
+[ForecastService]<>->[ForecastRepository]
+[ForecastService]<>->[GridpointRepository]
+[ForecastService]<>->[RestTemplateBuilder]
+[ForecastService]<>->[UriComponentsDirectorFactory]
+
+// Alert Service Relationships
+[AlertService]<>->[UriComponentsDirectorFactory]
+[AlertService]<>->[RestTemplateBuilder]
+
+// UriComponents Relationships
+[ApplicationProperties]<-.-creates[ApplciationPropertiesFactory]
+[UriComponentsDirectorFactory]<-<>[GeocodingService]<>->[RestTemplateBuilder]
+[HereProperties]-.-^[ApplicationProperties]^-.-[NWSProperties]
+[UriComponentsDirectorFactory]creates-.->[UriComponentsDirector]
+[NWSUriComponentsDirector]-.-^[UriComponentsDirector]^-.-[HereUriComponentsDirector]
+[UriComponentsDirector]<>->[UriComponentsBuilder]creates-.->[UriComponents]creates-.->[URI]-.-[note: Do I need to show UriComponents despite passing through straight to URI?]-.-[note: UriComponentsDirector instances create URIs. Should URI be attached to interface instead?]
+[ApplciationPropertiesFactory]<-<>[UriComponentsDirector]
+[JacksonConfiguration]creates-.->[ObjectMapper]
+
+// Domain Relationships
+[Forecast]^-.-[HourlyForecast]
+[Forecast]^-.-[DailyForecast]
+[Office]->[Gridpoint]->[Coordinate]
+
+// DTO Relationships
+[WeatherDTO]<>->[AlertDTO]
+[WeatherDTO]<>->[ForecastDTO]
+
+// Weather Service Definitions
+[<<Controller>>;WeatherController]
+[<<Service>>;WeatherService]
+
+// Forecast Service Definitions
+[<<Service>>;ForecastService]
+[<<Repository>>;ForecastRepository]
+[<<Repository>>;GridpointRepository]
+
+// Alert Service Definitions
+[<<Service>>;AlertService]
+
+// Geocoding Service Definitions
+[<<Service>>;GeocodingService|-restTemplate: RestTemplate;-uriComponentsDirector: UriComponentsDirector|+encode(address: Address): Coordinate;+decode(point: Coordinate): Address]
+
+// Domain Definitions
+[Coordinate|-latitude: double; -longitude: double|+getLatitude(): double; +getLongitude(): double]
+[Gridpoint|-gridX: int; -gridY: int; -office: Office; -boundingBox: Coordinate List|+getGridX(): int;+getGridY(): int;+getOffice(): Office;+contains(point: Coordinate): boolean]-.-[note: bbox list or map or other]
+[Office]
+[Alert]
+[Address]
+[<<Interface>>;Forecast]
+[DailyForecast]
+[HourlyForecast]
+[<<Interface>>;ForecastStrategy]
+
+// DTO Definitions
+[ForecastDTO]
+[AlertDTO]
+[WeatherDTO]
+
+// Utils Definitions
+[<<Bean>>;RestTemplateBuilder]
+[<<Bean>>;ObjectMapper]
+[<<Component>>;ApplciationPropertiesFactory]
+[<<Interface>>;ApplicationProperties]
+[<<Component>>;UriComponentsDirectorFactory]
+[<<Configuration>>;HereProperties]
+[<<Configuration>>;NWSProperties]
+// Should create String URI not UriComponentBuilder
+// Uses UriComponentBuilder
+[<<Interface>>;UriComponentsDirector]
+[<<Bean>>;UriComponentsBuilder]
+[UriComponents]
+[URI]
+[<<Configuration>>;JacksonConfiguration]
+[<<Component>>;ForecastStrategyFactory]
+[<<Enum>>;HereServices]
