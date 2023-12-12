@@ -27,7 +27,7 @@
 // Domain Relationships
 [Forecast]^-.-[HourlyForecast]
 [Forecast]^-.-[DailyForecast]
-[Office]->[Gridpoint]->[Coordinate]
+[Gridpoint]->[Coordinate]
 
 // DTO Relationships
 [WeatherDTO]<>->[AlertDTO]
@@ -39,6 +39,8 @@
 
 // Forecast Service Definitions
 [<<Service>>;ForecastService]
+
+// Are these better suited as DAOs that are encapsulated in a repository?
 [<<Repository>>;ForecastRepository]
 [<<Repository>>;GridpointRepository]
 
@@ -50,8 +52,7 @@
 
 // Domain Definitions
 [Coordinate|-latitude: double; -longitude: double|+getLatitude(): double; +getLongitude(): double]
-[Gridpoint|-gridX: int; -gridY: int; -office: Office; -boundingBox: Coordinate List|+getGridX(): int;+getGridY(): int;+getOffice(): Office;+contains(point: Coordinate): boolean]-.-[note: bbox list or map or other]
-[Office]
+[Gridpoint|-gridX: int; -gridY: int; -office: String; -polygon: String|+getGridX(): int;+getGridY(): int;+getPolygon(): String]-.-[note: bbox list or map or other]
 [Alert]
 [Address]
 [<<Interface>>;Forecast]
@@ -79,5 +80,7 @@
 [UriComponents]
 [URI]
 [<<Configuration>>;JacksonConfiguration]
+[<<Configuration>>;RedisConfiguration]
 [<<Component>>;ForecastStrategyFactory]
 [<<Enum>>;HereServices]
+[AddressBuilder]
