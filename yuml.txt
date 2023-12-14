@@ -18,11 +18,18 @@
 [ApplicationProperties]<-.-creates[ApplciationPropertiesFactory]
 [UriComponentsDirectorFactory]<-<>[GeocodingService]<>->[RestTemplateBuilder]
 [HereProperties]-.-^[ApplicationProperties]^-.-[NWSProperties]
+[ApplicationProperties]^-.-[RedisProperties]
 [UriComponentsDirectorFactory]creates-.->[UriComponentsDirector]
 [NWSUriComponentsDirector]-.-^[UriComponentsDirector]^-.-[HereUriComponentsDirector]
 [UriComponentsDirector]<>->[UriComponentsBuilder]creates-.->[UriComponents]creates-.->[URI]-.-[note: Do I need to show UriComponents despite passing through straight to URI?]-.-[note: UriComponentsDirector instances create URIs. Should URI be attached to interface instead?]
 [ApplciationPropertiesFactory]<-<>[UriComponentsDirector]
 [JacksonConfiguration]creates-.->[ObjectMapper]
+[RedisConfiguration]creates-.->[JedisConnectionFactory]
+[RedisConfiguration]creates-.->[RedisTemplate]
+[GeotoolsConfiguration]creates-.->[WKTReader2]
+[GeotoolsConfiguration]creates-.->[WKTWriter2]
+[GeotoolsConfiguration]creates-.->[GeoJSONReader]
+[GeotoolsConfiguration]creates-.->[GeoJSONWriter]
 
 // Domain Relationships
 [Forecast]^-.-[HourlyForecast]
@@ -34,27 +41,27 @@
 [WeatherDTO]<>->[ForecastDTO]
 
 // Weather Service Definitions
-[<<Controller>>;WeatherController]
-[<<Service>>;WeatherService]
+[<<Controller>>;WeatherController|-weatherService: WeatherService|+getWeatherByCoordinate(coordinate: CoordinateDTO): WeatherDTO;+getWeatherByAddress(address: String): WeatherDTO]
+[<<Service>>;WeatherService|-geocodingService: GeocodingService;-forecastService: ForecastService;-alertService: AlertService|+getWeatherByCoordinate(coordinate: CoordinateDTO): WeatherDTO;+getWeatherByAddress(address: String): WeatherDTO]
 
 // Forecast Service Definitions
-[<<Service>>;ForecastService]
+[<<Service>>;ForecastService|-restTemplate: RestTemplate;-uriComponentsDirector: UriComponentsDirector|+getForecast(strategy: ???): Forecast]
 
 // Are these better suited as DAOs that are encapsulated in a repository?
 [<<Repository>>;ForecastRepository]
 [<<Repository>>;GridpointRepository]
 
 // Alert Service Definitions
-[<<Service>>;AlertService]
+[<<Service>>;AlertService|-restTemplate: RestTemplate;-uriComponentsDirector: UriComponentsDirector|+getAllAlerts(strategy: ???): Alert List]
 
 // Geocoding Service Definitions
-[<<Service>>;GeocodingService|-restTemplate: RestTemplate;-uriComponentsDirector: UriComponentsDirector|+encode(address: Address): Coordinate;+decode(point: Coordinate): Address]
+[<<Service>>;GeocodingService|-restTemplate: RestTemplate;-uriComponentsDirector: UriComponentsDirector|+encode(address: String): Coordinate;+decode(latitude: double, longitude: double): ???]
 
 // Domain Definitions
-[Coordinate|-latitude: double; -longitude: double|+getLatitude(): double; +getLongitude(): double]
+[Coordinate]
 [Gridpoint|-gridX: int; -gridY: int; -office: String; -polygon: String|+getGridX(): int;+getGridY(): int;+getPolygon(): String]-.-[note: bbox list or map or other]
 [Alert]
-[Address]
+[RelativeAddress]
 [<<Interface>>;Forecast]
 [DailyForecast]
 [HourlyForecast]
@@ -68,19 +75,31 @@
 // Utils Definitions
 [<<Bean>>;RestTemplateBuilder]
 [<<Bean>>;ObjectMapper]
+[<<Bean>>;RedisTemplate]
+[<<Bean>>;JedisConnectionFactory]
+[<<Bean>>;UriComponentsBuilder]
+[<<Bean>>;WKTReader2]
+[<<Bean>>;WKTWriter2]
+[<<Bean>>;GeoJSONReader]
+[<<Bean>>;GeoJSONWriter]
 [<<Component>>;ApplciationPropertiesFactory]
 [<<Interface>>;ApplicationProperties]
-[<<Component>>;UriComponentsDirectorFactory]
-[<<Configuration>>;HereProperties]
-[<<Configuration>>;NWSProperties]
+[<<Component>>;UriComponentsDirectorFactory|+createDirector(type: String): UriComponentsDirector;-createHereUriDirector(): HereUriComponentsDirector;-createNWSUriDirector(): NWSUriComponentsDirector]
+[HereUriComponentsDirector|-uriComponentsBuilder: UriComponentsBuilder|+getEncodeUri(address: String): String;+getDecodeUri(coordinate: Coordinate): String]
+[<<Configuration>>;HereProperties|-apiKey: String;-apiVersion: String;-baseHost: String|+getApiKey(): String;+setApiKey(key: String): void;+getApiVersion(): String;+setApiVersion(version: String): void;+getBaseHost(): String;+setBaseHost(baseHost: String): void]
+[<<Configuration>>;NWSProperties|-host: String;-userAgent: String|+getHost(): String;+setHost(host: String): void;+getUserAgent(): String;+setUserAgent(userAgent: String): void]
+[<<Configuration>>;RedisProperties|-hostName: String;-port: int|+getHostName(): String;+setHostName(String hostName): void;+getPort(): int;+setPort(port: int): void]
 // Should create String URI not UriComponentBuilder
 // Uses UriComponentBuilder
 [<<Interface>>;UriComponentsDirector]
-[<<Bean>>;UriComponentsBuilder]
 [UriComponents]
 [URI]
-[<<Configuration>>;JacksonConfiguration]
-[<<Configuration>>;RedisConfiguration]
+[<<Configuration>>;JacksonConfiguration|+objectMapper(): ObjectMapper]
+[<<Configuration>>;RedisConfiguration|]
+[<<Configuration>>;GeotoolsConfiguration|+wktReader2(): WKTReader2;+wktWriter2(): WKTWriter2;+geoJSONReader(): GeoJSONReader;+geoJSONWriter(): GeoJSONWriter]
 [<<Component>>;ForecastStrategyFactory]
 [<<Enum>>;HereServices]
-[AddressBuilder]
+
+// Questions
+// How do I inject the right properties to each director?
+// Where should I use strategy class?
