@@ -1,10 +1,8 @@
 package com.evanm.weather.service;
 
-import org.locationtech.jts.geom.Coordinate;
+import com.evanm.weather.domain.RelativeLocation;
 
 public interface GeocodingService {
-    Coordinate encode(String address);
-    // String or RelativeLocation?
-    // Two doubles or Coordinate?
-    String decode(double latitude, double longitude);
+    RelativeLocation encode(String address);
+    RelativeLocation decode(double latitude, double longitude);
 }
