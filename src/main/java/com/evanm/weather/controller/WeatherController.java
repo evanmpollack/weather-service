@@ -5,29 +5,30 @@ import com.evanm.weather.service.WeatherService;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/weather")
 public class WeatherController {
+    private final static String DEFAULT_FORMAT = "daily";
+    
     private WeatherService weatherService;
 
     public WeatherController(WeatherService weatherService) {
         this.weatherService = weatherService;
     }
-    
-    // Query params or path parameters?
 
     // String or CoordinateDTO?
     // Query Params for strategy
     @GetMapping("/coordinate/{coordinate}")
-    public WeatherDTO getWeatherByCoordinate(@PathVariable String coordinate) {
-        return weatherService.getWeatherByCoordinate(coordinate);
+    public WeatherDTO getWeatherByCoordinate(@PathVariable String coordinate, @RequestParam(required = false, defaultValue = DEFAULT_FORMAT) String format) {
+        return weatherService.getWeatherByCoordinate(coordinate, format);
     }
 
     @GetMapping("/address/{address}")
-    public WeatherDTO getWeatherByAddress(@PathVariable String address) {
-        return weatherService.getWeatherByAddress(address);
+    public WeatherDTO getWeatherByAddress(@PathVariable String address, @RequestParam(required = false, defaultValue = DEFAULT_FORMAT) String format) {
+        return weatherService.getWeatherByAddress(address, format);
     }
 }
