@@ -3,39 +3,49 @@ package com.evanm.weather.repository;
 import java.util.Optional;
 import org.locationtech.jts.geom.Coordinate;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Repository;
 
 import com.evanm.weather.domain.Gridpoint;
 
+import java.util.HashMap;
+import java.util.Map;
 
+@Repository
 public class GridpointRepository implements GeoRepository<Gridpoint, String> {
-    private RedisTemplate<String, String> redisTemplate;
+    private final static String KEY = "gridpoint";
     
-    public GridpointRepository(RedisTemplate<String, String> redisTemplate) {
+    private RedisTemplate<String, Gridpoint> redisTemplate;
+    
+    public GridpointRepository(RedisTemplate<String, Gridpoint> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
+
+    // Try catch
     
     @Override
     public <S extends Gridpoint> S save(S entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
+        redisTemplate.opsForHash().put(KEY, entity.getOffice(), entity);
+
+        return entity;
     }
 
     @Override
     public <S extends Gridpoint> Iterable<S> saveAll(Iterable<S> entities) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'saveAll'");
+        Map<String, Gridpoint> entityMap = new HashMap<>();
+        entities.forEach((e) -> entityMap.put(e.getOffice(), e));
+        redisTemplate.opsForHash().putAll(KEY, entityMap);
+        
+        return entities;
     }
 
     @Override
     public Optional<Gridpoint> findById(String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+        return Optional.of((Gridpoint) redisTemplate.opsForHash().get(KEY, id));
     }
 
     @Override
     public boolean existsById(String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'existsById'");
+        return findById(id).isPresent();
     }
 
     @Override
@@ -58,14 +68,12 @@ public class GridpointRepository implements GeoRepository<Gridpoint, String> {
 
     @Override
     public void deleteById(String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
+        redisTemplate.opsForHash().delete(KEY, id);
     }
 
     @Override
     public void delete(Gridpoint entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        deleteById(entity.getOffice());
     }
 
     @Override
