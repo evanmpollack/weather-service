@@ -1,7 +1,10 @@
 package com.evanm.weather.service;
 
+import org.springframework.stereotype.Service;
+
 import com.evanm.weather.dto.WeatherDTO;
 
+@Service
 public class USWeatherService implements WeatherService {
     private GeocodingService geocodingService;
     private ForecastService forecastService;
