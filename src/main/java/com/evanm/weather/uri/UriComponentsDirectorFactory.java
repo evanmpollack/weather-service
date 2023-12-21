@@ -19,7 +19,7 @@ public class UriComponentsDirectorFactory {
                 director = createNWSUriComponentsDirector();
                 break;
             case "here":
-                director = createHereUriDirector();
+                director = createHereUriComponentsDirector();
                 break;
             default:
                 throw new IllegalArgumentException(type + " does not correspond to a concrete UriComponentsDirector implementation");
@@ -28,7 +28,7 @@ public class UriComponentsDirectorFactory {
         return director;
     }
 
-    private HereUriComponentsDirector createHereUriDirector() {
+    private HereUriComponentsDirector createHereUriComponentsDirector() {
         String apiKey = environment.getProperty("here.apiKey");
         String apiVersion = environment.getProperty("here.apiVersion");
         String baseHost = environment.getProperty("here.baseHost");
