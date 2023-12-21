@@ -38,8 +38,7 @@ public class UriComponentsDirectorFactory {
 
     private NWSUriComponentsDirector createNWSUriComponentsDirector() {
         String host = environment.getProperty("nws.host");
-        String userAgent = environment.getProperty("nws.userAgent");
         
-        return new NWSUriComponentsDirector(host, userAgent);
+        return new NWSUriComponentsDirector(host);
     }
 }

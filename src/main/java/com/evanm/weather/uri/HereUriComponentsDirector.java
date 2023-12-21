@@ -2,6 +2,7 @@ package com.evanm.weather.uri;
 
 import java.util.Collections;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 public class HereUriComponentsDirector implements UriComponentsDirector {
@@ -11,7 +12,7 @@ public class HereUriComponentsDirector implements UriComponentsDirector {
     private final UriComponentsBuilder baseBuilder;
     
     public HereUriComponentsDirector(String apiKey, String apiVersion, String baseHost) {
-        this.baseBuilder = UriComponentsBuilder.newInstance()
+        baseBuilder = UriComponentsBuilder.newInstance()
             .scheme("https")
             .host("{service}." + baseHost)
             .pathSegment(apiVersion)
@@ -27,9 +28,9 @@ public class HereUriComponentsDirector implements UriComponentsDirector {
             .toUriString();
     }
 
-    public String getDecodeUri(double latitude, double longitude) {
-        String stringLat = String.valueOf(latitude);
-        String stringLng = String.valueOf(longitude);
+    public String getDecodeUri(Coordinate coordinate) {
+        String stringLat = String.valueOf(coordinate.getX());
+        String stringLng = String.valueOf(coordinate.getY());
         
         return baseBuilder.cloneBuilder()
             .queryParam("at", String.join(",", stringLat, stringLng))
