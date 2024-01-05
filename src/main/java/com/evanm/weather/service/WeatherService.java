@@ -1,8 +1,8 @@
 package com.evanm.weather.service;
 
-import com.evanm.weather.dto.WeatherDTO;
+// import com.evanm.weather.dto.WeatherDTO;
 
 public interface WeatherService {
-    WeatherDTO getWeatherByCoordinate(String coordinate, String format);
-    WeatherDTO getWeatherByAddress(String address, String format);
+    String getWeatherByCoordinate(String coordinate, String format) throws Exception;
+    String getWeatherByAddress(String address, String format) throws Exception;
 }

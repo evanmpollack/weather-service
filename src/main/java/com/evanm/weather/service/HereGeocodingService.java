@@ -6,7 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.evanm.weather.domain.RelativeLocation;
+import com.evanm.weather.domain.Address;
+// import com.evanm.weather.domain.RelativeLocation;
 import com.evanm.weather.exceptions.GeocodingServiceException;
 import com.evanm.weather.uri.HereUriComponentsDirector;
 // import com.evanm.weather.uri.UriComponentsDirector;
@@ -27,8 +28,8 @@ public class HereGeocodingService implements GeocodingService {
     }
     
     @Override
-    public RelativeLocation encode(String address) throws GeocodingServiceException {
-        ResponseEntity<RelativeLocation> res = restTemplate.getForEntity(uriComponentsDirector.getEncodeUri(address), RelativeLocation.class);
+    public Coordinate encode(String address) throws GeocodingServiceException {
+        ResponseEntity<Coordinate> res = restTemplate.getForEntity(uriComponentsDirector.getEncodeUri(address), Coordinate.class);
         if (res.getStatusCode().isError()) { 
             throw new GeocodingServiceException("Address, " + address + ", could not be encoded"); 
         }
@@ -37,8 +38,8 @@ public class HereGeocodingService implements GeocodingService {
     }
 
     @Override
-    public RelativeLocation decode(Coordinate coordinate) throws GeocodingServiceException {
-        ResponseEntity<RelativeLocation> res = restTemplate.getForEntity(uriComponentsDirector.getDecodeUri(coordinate), RelativeLocation.class);
+    public Address decode(Coordinate coordinate) throws GeocodingServiceException {
+        ResponseEntity<Address> res = restTemplate.getForEntity(uriComponentsDirector.getDecodeUri(coordinate), Address.class);
         if (res.getStatusCode().isError()) { 
             throw new GeocodingServiceException("Coordinate, " + coordinate.toString() + ", could not be decoded");
         }
