@@ -7,6 +7,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.springframework.stereotype.Service;
 
 import com.evanm.weather.domain.Address;
+import com.evanm.weather.domain.Alerts;
 import com.evanm.weather.domain.Forecast;
 // import com.evanm.weather.domain.RelativeLocation;
 import com.evanm.weather.dto.WeatherDTO;
@@ -28,23 +29,23 @@ public class USWeatherService implements WeatherService {
         // Formatting decimals shouldn't be in this service
         // CoordinateDTO --> Coordinate, formatting in the process?
 
-        // Sanitize coordinate
+        // Sanitize and create coordinate
         String[] coordinateParts = coordinate.split(",");
         double latitude = Double.valueOf(String.format("%.4f", Double.valueOf(coordinateParts[0])));
         double longitude = Double.valueOf(String.format("%.4f", Double.valueOf(coordinateParts[1])));
-
-        System.out.println(latitude);
 
         Coordinate c = new Coordinate(latitude, longitude);
 
         // Decode coordinate
         Address address = geocodingService.decode(c);
-
-        System.out.println(address);
         
-        // Get weather
-        return forecastService.getForecast(c, format);
+        // Get 7 day forecast
+        String forecast = forecastService.getForecast(c, format);
+        
+        // Get active alerts
+        Alerts activeAlerts = alertService.getAllAlerts(c);
 
+        return null;
         
         // Forecast forecast = forecastService.getForecast(format);
         // List<Alert> alerts = alertService.getAllAlerts();

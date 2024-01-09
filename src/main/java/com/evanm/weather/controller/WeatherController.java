@@ -34,7 +34,6 @@ public class WeatherController {
 
     @GetMapping("/address/{address}")
     public String getWeatherByAddress(@PathVariable String address, @RequestParam(required = false, defaultValue = DEFAULT_FORMAT) String format) {
-        System.out.println(address + " " + format);
         try {
             return weatherService.getWeatherByAddress(address, format);
         } catch (Exception e) {

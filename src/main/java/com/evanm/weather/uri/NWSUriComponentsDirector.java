@@ -15,7 +15,7 @@ public class NWSUriComponentsDirector implements UriComponentsDirector {
     /**
      * 1. getPointUri()
      * 2. getAlertByPointUri()
-     * 3. getAlertByAreaUri()
+     * 3. getAlertByAreaUri() -- Needed?
      */
 
     public String getPointUri(Coordinate coordinate) {
@@ -29,6 +29,7 @@ public class NWSUriComponentsDirector implements UriComponentsDirector {
     public String getAlertByPointUri(Coordinate coordinate) {
         return baseBuilder.cloneBuilder()
             .pathSegment("alerts")
+            .pathSegment("active")
             .queryParam("point", "{latitude},{longitude}")
             .buildAndExpand(coordinate.getX(), coordinate.getY())
             .toUriString();
