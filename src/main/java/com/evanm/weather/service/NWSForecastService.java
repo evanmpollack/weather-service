@@ -1,8 +1,6 @@
 package com.evanm.weather.service;
 
 import org.locationtech.jts.geom.Coordinate;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -32,7 +30,7 @@ public class NWSForecastService implements ForecastService {
     }
 
     @Override
-    public String getForecast(Coordinate coordinate, String format) throws ForecastServiceException, JsonMappingException, RestClientException, JsonProcessingException, IllegalArgumentException {
+    public Forecast getForecast(Coordinate coordinate, String format) throws ForecastServiceException, JsonMappingException, RestClientException, JsonProcessingException, IllegalArgumentException {
         // Check redis for gridpoint where coordinate within
         
         ResponseEntity<String> pointRes = restTemplate.getForEntity(uriComponentsDirector.getPointUri(coordinate), String.class);
@@ -49,7 +47,7 @@ public class NWSForecastService implements ForecastService {
             forecastUri = props.required("forecast").textValue();
         }
         
-        ResponseEntity<String> forecastRes = restTemplate.getForEntity(forecastUri, String.class);
+        ResponseEntity<Forecast> forecastRes = restTemplate.getForEntity(forecastUri, Forecast.class);
         
         if (forecastRes.getStatusCode().isError()) {
             throw new ForecastServiceException("Failed to get forecast from " + forecastUri + ".");
