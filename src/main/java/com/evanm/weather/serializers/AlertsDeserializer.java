@@ -2,6 +2,8 @@ package com.evanm.weather.serializers;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.evanm.weather.domain.Alert;
 import com.evanm.weather.domain.Alerts;
@@ -25,7 +27,7 @@ public class AlertsDeserializer extends StdDeserializer<Alerts> {
         JsonNode root = p.getCodec().readTree(p);
         JsonNode features = root.required("features");
 
-        Alerts alerts = new Alerts();
+        List<Alert> alerts = new ArrayList<>();
         if (!features.isEmpty()) {
             for (JsonNode feature : features) {
                 JsonNode props = feature.required("properties");
@@ -47,6 +49,6 @@ public class AlertsDeserializer extends StdDeserializer<Alerts> {
             }
         }
 
-        return alerts;
+        return new Alerts(alerts);
     }
 }
