@@ -2,8 +2,14 @@ package com.evanm.weather.domain;
 
 public class Weather {
     private Address address;
-    private String forecast;
+    private Forecast forecast;
     private Alerts alerts;
+
+    public Weather(Address address, Forecast forecast, Alerts alerts) {
+        this.address = address;
+        this.forecast = forecast;
+        this.alerts = alerts;
+    }
 
     public Address getAddress() {
         return address;
@@ -13,11 +19,11 @@ public class Weather {
         this.address = address;
     }
 
-    public String getForecast() {
+    public Forecast getForecast() {
         return forecast;
     }
 
-    public void setForecast(String forecast) {
+    public void setForecast(Forecast forecast) {
         this.forecast = forecast;
     }
 

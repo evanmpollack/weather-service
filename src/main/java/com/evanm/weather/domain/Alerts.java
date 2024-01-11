@@ -14,6 +14,10 @@ public class Alerts {
         alerts.add(alert);
     }
 
+    public List<Alert> getAlerts() {
+        return alerts;
+    }
+
     @Override
     public String toString() {
         return alerts.toString();

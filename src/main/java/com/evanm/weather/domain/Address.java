@@ -13,6 +13,18 @@ public class Address {
         this.state = state;
     }
 
+    public String getDistrict() {
+        return district;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
