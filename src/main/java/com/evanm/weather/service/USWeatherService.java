@@ -1,15 +1,13 @@
 package com.evanm.weather.service;
 
-import java.text.DecimalFormat;
-
 import org.locationtech.jts.geom.Coordinate;
-// import org.locationtech.jts.geom.Coordinate;
 import org.springframework.stereotype.Service;
 
 import com.evanm.weather.domain.Address;
 import com.evanm.weather.domain.Alerts;
 import com.evanm.weather.domain.Forecast;
-// import com.evanm.weather.domain.RelativeLocation;
+import com.evanm.weather.domain.Weather;
+
 import com.evanm.weather.dto.WeatherDTO;
 
 @Service
@@ -25,45 +23,42 @@ public class USWeatherService implements WeatherService {
     }
 
     @Override
-    public String getWeatherByCoordinate(String coordinate, String format) throws Exception {
+    public Weather getWeatherByCoordinate(String coordinateString, String format) throws Exception {
         // Formatting decimals shouldn't be in this service
         // CoordinateDTO --> Coordinate, formatting in the process?
 
         // Sanitize and create coordinate
-        String[] coordinateParts = coordinate.split(",");
+        String[] coordinateParts = coordinateString.split(",");
         double latitude = Double.valueOf(String.format("%.4f", Double.valueOf(coordinateParts[0])));
         double longitude = Double.valueOf(String.format("%.4f", Double.valueOf(coordinateParts[1])));
 
-        Coordinate c = new Coordinate(latitude, longitude);
+        Coordinate coordinate = new Coordinate(latitude, longitude);
 
         // Decode coordinate
-        Address address = geocodingService.decode(c);
+        Address address = geocodingService.decode(coordinate);
         
         // Get 7 day forecast
-        String forecast = forecastService.getForecast(c, format);
+        Forecast forecast = forecastService.getForecast(coordinate, format);
         
         // Get active alerts
-        Alerts activeAlerts = alertService.getAllAlerts(c);
+        Alerts activeAlerts = alertService.getAllAlerts(coordinate);
 
-        return null;
-        
-        // Forecast forecast = forecastService.getForecast(format);
-        // List<Alert> alerts = alertService.getAllAlerts();
-        // RelativeLocation addressLocation = geocodingService.decode(coordinate); --> Async?
-        // return mapper.toDTO(RelativeLocation, Forecast, Alerts);
+        // Aggregate
+        Weather weather = new Weather(address, forecast, activeAlerts);
+
+        return weather;
     }
 
     @Override
-    public String getWeatherByAddress(String address, String format) throws Exception {
-        System.out.println(address);
-        // RelativeLocation location = geocodingService.encode(address);
-        // String forecast = forecastService.getForecast(location.getCoordinate(), format);
-        // List<Alert> alerts = alertService.getAllAlerts();
-        // return mapper.toDTO(RelativeLocation, Forecast, Alerts);
+    public Weather getWeatherByAddress(String address, String format) throws Exception {
+        // Location aggregate needed? Inputted address doesn't necessarily provide information for webpage
+        // Location interface needed instead? should weather know what location data they hold?
         
-        
-        // TODO Auto-generated method stub
-        return null;
+        Coordinate coordinate = geocodingService.encode(address);
+        Forecast forecast = forecastService.getForecast(coordinate, format);
+        Alerts alerts = alertService.getAllAlerts(coordinate);
+
+        return new Weather(null, forecast, alerts);
     }
     
 }

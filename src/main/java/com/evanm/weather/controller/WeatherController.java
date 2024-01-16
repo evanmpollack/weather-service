@@ -1,6 +1,8 @@
 package com.evanm.weather.controller;
 
 
+import com.evanm.weather.domain.Weather;
+import com.evanm.weather.dto.WeatherDTO;
 import com.evanm.weather.service.WeatherService;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -23,17 +25,18 @@ public class WeatherController {
     // String or CoordinateDTO?
     // Query Params for strategy
     @GetMapping("/coordinate/{coordinate}")
-    public String getWeatherByCoordinate(@PathVariable String coordinate, @RequestParam(required = false, defaultValue = DEFAULT_FORMAT) String format) {
+    public Weather getWeatherByCoordinate(@PathVariable String coordinate, @RequestParam(required = false, defaultValue = DEFAULT_FORMAT) String format) {
         try {
             return weatherService.getWeatherByCoordinate(coordinate, format);
         } catch (Exception e) {
+            System.out.println(e.getClass());
             e.printStackTrace();
             return null;
         }
     }
 
     @GetMapping("/address/{address}")
-    public String getWeatherByAddress(@PathVariable String address, @RequestParam(required = false, defaultValue = DEFAULT_FORMAT) String format) {
+    public Weather getWeatherByAddress(@PathVariable String address, @RequestParam(required = false, defaultValue = DEFAULT_FORMAT) String format) {
         try {
             return weatherService.getWeatherByAddress(address, format);
         } catch (Exception e) {

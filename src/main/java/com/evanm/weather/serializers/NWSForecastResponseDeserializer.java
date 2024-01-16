@@ -5,39 +5,51 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geotools.data.geojson.GeoJSONReader;
+import org.locationtech.jts.geom.Polygon;
+
 import com.evanm.weather.domain.Dewpoint;
-import com.evanm.weather.domain.Forecast;
 import com.evanm.weather.domain.ForecastPeriod;
 import com.evanm.weather.domain.Humidity;
 import com.evanm.weather.domain.Precipitation;
 import com.evanm.weather.domain.Temperature;
 import com.evanm.weather.domain.Wind;
+import com.evanm.weather.dto.NWSForecastResponse;
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
-public class ForecastDeserializer extends StdDeserializer<Forecast> {
-    public ForecastDeserializer() {
+public class NWSForecastResponseDeserializer extends StdDeserializer<NWSForecastResponse> {
+    public NWSForecastResponseDeserializer() {
         this(null);
     }
 
-    public ForecastDeserializer(Class<?> vc) {
+    public NWSForecastResponseDeserializer(Class<?> vc) {
         super(vc);
     }
 
     @Override
-    public Forecast deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException {
+    public NWSForecastResponse deserialize(JsonParser p, DeserializationContext ctxt)
+            throws IOException, JacksonException {
         JsonNode root = p.getCodec().readTree(p);
+        
         JsonNode props = root.required("properties");
-        JsonNode periods = props.required("periods");
+        JsonNode forecastPeriodRoot = props.required("periods");
+        List<ForecastPeriod> forecastPeriods = parseForecastPeriods(forecastPeriodRoot);
+        
+        Polygon bounds = parseGeoJson(root);
 
+        return new NWSForecastResponse(forecastPeriods, bounds);
+    }
+
+    private List<ForecastPeriod> parseForecastPeriods(JsonNode forecastPeriodRoot) {
         List<ForecastPeriod> forecastPeriods = new ArrayList<>();
-        if (!periods.isEmpty()) {
-            for (JsonNode period : periods) {
+        
+        if (!forecastPeriodRoot.isEmpty()) {
+            for (JsonNode period : forecastPeriodRoot) {
                 // Toplevel field creation
-
                 int number = period.path("number").asInt();
                 String name = period.path("name").asText();
                 ZonedDateTime start = ZonedDateTime.parse(period.path("startTime").asText());
@@ -91,8 +103,12 @@ public class ForecastDeserializer extends StdDeserializer<Forecast> {
                 forecastPeriods.add(forecastPeriod);
             }
         }
-        
-        
-        return new Forecast(forecastPeriods);
+
+        return forecastPeriods;
+    }
+
+    public Polygon parseGeoJson(JsonNode geometryRoot) {
+        String geoJson = geometryRoot.required("geometry").toString();
+        return (Polygon) GeoJSONReader.parseGeometry(geoJson);
     }
 }

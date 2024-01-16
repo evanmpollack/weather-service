@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import com.evanm.weather.domain.Address;
 import com.evanm.weather.domain.Alerts;
 import com.evanm.weather.domain.Forecast;
+import com.evanm.weather.dto.NWSForecastResponse;
+import com.evanm.weather.dto.NWSPointResponse;
 import com.evanm.weather.serializers.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -40,7 +42,8 @@ public class JacksonConfiguration {
         serializerModule.addDeserializer(Address.class, new AddressDeserializer());
         serializerModule.addDeserializer(Coordinate.class, new CoordinateDeserializer());
         serializerModule.addDeserializer(Alerts.class, new AlertsDeserializer());
-        serializerModule.addDeserializer(Forecast.class, new ForecastDeserializer());
+        serializerModule.addDeserializer(NWSPointResponse.class, new NWSPointResponseDeserializer());
+        serializerModule.addDeserializer(NWSForecastResponse.class, new NWSForecastResponseDeserializer());
 
         return serializerModule;
     }
